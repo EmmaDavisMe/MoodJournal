@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // save mood entry
-    saveButton.addEventListener('click', function() {
+    saveButton.addEventListener('click', async function() {
         if (!selectedMood) {
             alert('Please select a mood first!');
             return;
@@ -31,16 +31,31 @@ document.addEventListener('DOMContentLoaded', function() {
             date: new Date().toLocaleDateString()
         };
         
-        // for now just store locally and display
-        saveEntryLocally(entry);
-        displayEntry(entry);
-        
-        // clear form
-        moodButtons.forEach(btn => btn.classList.remove('selected'));
-        notesTextarea.value = '';
-        selectedMood = null;
-        
-        alert('Mood saved! (locally for now)');
+        try {
+            const response = await fetch('/api/mood/entries', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(entry)
+            });
+            
+            if (response.ok) {
+                // clear form
+                moodButtons.forEach(btn => btn.classList.remove('selected'));
+                notesTextarea.value = '';
+                selectedMood = null;
+                
+                // reload entries
+                loadEntries();
+                alert('Mood saved successfully!');
+            } else {
+                alert('Failed to save mood entry');
+            }
+        } catch (error) {
+            console.error('Error saving mood:', error);
+            alert('Error saving mood entry');
+        }
     });
     
     // load existing entries
@@ -53,17 +68,23 @@ function saveEntryLocally(entry) {
     localStorage.setItem('moodEntries', JSON.stringify(entries));
 }
 
-function loadEntries() {
-    const entries = JSON.parse(localStorage.getItem('moodEntries') || '[]');
+async function loadEntries() {
     const entriesList = document.getElementById('entries-list');
     
-    if (entries.length === 0) {
-        entriesList.innerHTML = '<p>No entries yet. Start tracking your mood!</p>';
-        return;
+    try {
+        const response = await fetch('/api/mood/entries');
+        const data = await response.json();
+        
+        if (data.entries && data.entries.length > 0) {
+            entriesList.innerHTML = '';
+            data.entries.forEach(entry => displayEntry(entry));
+        } else {
+            entriesList.innerHTML = '<p>No entries yet. Start tracking your mood!</p>';
+        }
+    } catch (error) {
+        console.error('Error loading entries:', error);
+        entriesList.innerHTML = '<p>Error loading entries. Please try again.</p>';
     }
-    
-    entriesList.innerHTML = '';
-    entries.forEach(entry => displayEntry(entry));
 }
 
 function displayEntry(entry) {

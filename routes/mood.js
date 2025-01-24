@@ -35,4 +35,26 @@ router.post('/entries', (req, res) => {
     });
 });
 
+// get mood statistics
+router.get('/stats', (req, res) => {
+    db.all(`SELECT mood, COUNT(*) as count FROM mood_entries GROUP BY mood`, [], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        
+        const stats = {
+            total: 0,
+            moods: {}
+        };
+        
+        rows.forEach(row => {
+            stats.moods[row.mood] = row.count;
+            stats.total += row.count;
+        });
+        
+        res.json(stats);
+    });
+});
+
 module.exports = router;

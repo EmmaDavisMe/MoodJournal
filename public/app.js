@@ -46,8 +46,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 notesTextarea.value = '';
                 selectedMood = null;
                 
-                // reload entries
+                // reload entries and stats
                 loadEntries();
+                loadStats();
                 alert('Mood saved successfully!');
             } else {
                 alert('Failed to save mood entry');
@@ -58,8 +59,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // load existing entries
+    // load existing entries and stats
     loadEntries();
+    loadStats();
 });
 
 function saveEntryLocally(entry) {
@@ -96,6 +98,37 @@ function displayEntry(entry) {
         ${entry.notes ? `<br><em>"${entry.notes}"</em>` : ''}
     `;
     entriesList.insertBefore(entryDiv, entriesList.firstChild);
+}
+
+async function loadStats() {
+    const statsContainer = document.getElementById('stats-container');
+    
+    try {
+        const response = await fetch('/api/mood/stats');
+        const stats = await response.json();
+        
+        if (stats.total > 0) {
+            let statsHTML = `<div class="stats-summary">
+                <p><strong>Total Entries:</strong> ${stats.total}</p>
+                <div class="mood-breakdown">`;
+            
+            Object.entries(stats.moods).forEach(([mood, count]) => {
+                const percentage = ((count / stats.total) * 100).toFixed(1);
+                statsHTML += `
+                    <div class="mood-stat">
+                        ${getMoodEmoji(mood)} ${mood}: ${count} (${percentage}%)
+                    </div>`;
+            });
+            
+            statsHTML += '</div></div>';
+            statsContainer.innerHTML = statsHTML;
+        } else {
+            statsContainer.innerHTML = '<p>No statistics yet. Add some mood entries!</p>';
+        }
+    } catch (error) {
+        console.error('Error loading stats:', error);
+        statsContainer.innerHTML = '<p>Error loading statistics.</p>';
+    }
 }
 
 function getMoodEmoji(mood) {

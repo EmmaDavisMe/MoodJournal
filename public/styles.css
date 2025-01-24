@@ -45,6 +45,10 @@ main {
     margin-bottom: 40px;
 }
 
+.mood-stats {
+    margin-bottom: 40px;
+}
+
 .mood-input h2 {
     margin-bottom: 20px;
     color: #4a5568;
@@ -115,4 +119,35 @@ textarea {
 
 #entries-list {
     color: #718096;
+}
+
+.mood-stats h2 {
+    color: #4a5568;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+}
+
+.stats-summary {
+    background: #f7fafc;
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+}
+
+.mood-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.mood-stat {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }

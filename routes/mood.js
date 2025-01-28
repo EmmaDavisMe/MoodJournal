@@ -35,6 +35,25 @@ router.post('/entries', (req, res) => {
     });
 });
 
+// delete mood entry
+router.delete('/entries/:id', (req, res) => {
+    const { id } = req.params;
+    
+    db.run(`DELETE FROM mood_entries WHERE id = ?`, [id], function(err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        
+        if (this.changes === 0) {
+            res.status(404).json({ error: 'Entry not found' });
+            return;
+        }
+        
+        res.json({ message: 'Entry deleted successfully' });
+    });
+});
+
 // get mood statistics
 router.get('/stats', (req, res) => {
     db.all(`SELECT mood, COUNT(*) as count FROM mood_entries GROUP BY mood`, [], (err, rows) => {

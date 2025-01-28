@@ -94,8 +94,11 @@ function displayEntry(entry) {
     const entryDiv = document.createElement('div');
     entryDiv.className = 'mood-entry';
     entryDiv.innerHTML = `
-        <strong>${entry.date}</strong> - ${getMoodEmoji(entry.mood)} ${entry.mood}
-        ${entry.notes ? `<br><em>"${entry.notes}"</em>` : ''}
+        <div class="entry-content">
+            <strong>${entry.date}</strong> - ${getMoodEmoji(entry.mood)} ${entry.mood}
+            ${entry.notes ? `<br><em>"${entry.notes}"</em>` : ''}
+        </div>
+        ${entry.id ? `<button class="delete-btn" onclick="deleteEntry(${entry.id})">×</button>` : ''}
     `;
     entriesList.insertBefore(entryDiv, entriesList.firstChild);
 }
@@ -128,6 +131,29 @@ async function loadStats() {
     } catch (error) {
         console.error('Error loading stats:', error);
         statsContainer.innerHTML = '<p>Error loading statistics.</p>';
+    }
+}
+
+async function deleteEntry(id) {
+    if (!confirm('Are you sure you want to delete this entry?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/mood/entries/${id}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            loadEntries();
+            loadStats();
+            alert('Entry deleted successfully!');
+        } else {
+            alert('Failed to delete entry');
+        }
+    } catch (error) {
+        console.error('Error deleting entry:', error);
+        alert('Error deleting entry');
     }
 }
 

@@ -151,3 +151,37 @@ textarea {
     text-align: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
+
+.mood-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin: 10px 0;
+    background: #f7fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.entry-content {
+    flex-grow: 1;
+}
+
+.delete-btn {
+    background: #e53e3e;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+}
+
+.delete-btn:hover {
+    background: #c53030;
+}
